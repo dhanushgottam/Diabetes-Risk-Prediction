@@ -13,7 +13,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier
-
+    
 
 df = pd.read_csv(r"C:\Users\gottam dhanush\Downloads\archive (3)\diabetes_binary_5050split_health_indicators_BRFSS2015.csv")
 

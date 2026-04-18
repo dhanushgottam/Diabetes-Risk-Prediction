@@ -1,32 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Prediction Result</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result - Diabetes Risk</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        body { font-family: Arial; background: #eef2f3; padding: 30px; }
-        .box {
-            width: 450px; margin: auto; background: white; padding: 25px;
-            border-radius: 10px; text-align: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-
-        .good { color: green; font-size: 26px; font-weight: bold; }
-        .bad { color: red; font-size: 26px; font-weight: bold; }
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(25px);
+            border-radius: 25px;
+            padding: 50px 40px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            animation: fadeInUp 1s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        .result {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .good { color: #4ecdc4; }
+        .bad { color: #ff6b6b; animation: pulseRed 1.5s infinite; }
+        @keyframes pulseRed {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,107,0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(255,107,107,0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,107,107,0); }
+        }
+        .probability {
+            font-size: 1.4em;
+            color: white;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        .gauge {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .gauge-fill {
+            height: 100%;
+            transition: width 2s ease-out;
+            border-radius: 10px;
+        }
+        .back-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(78,205,196,0.4);
+            margin-top: 20px;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(78,205,196,0.6);
+        }
+        .subtitle { color: rgba(255,255,255,0.9); margin-bottom: 30px; }
+        @media (max-width: 600px) {
+            .container { padding: 40px 25px; margin: 20px; }
+            .result { font-size: 2em; }
+            .icon { font-size: 4em; }
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        {% if result == "Diabetes Detected" %}
+            <i class="fas fa-exclamation-triangle icon" style="color: #ff6b6b;"></i>
+            <div class="result bad">{{ result }}</div>
+            <div class="subtitle">Consult a healthcare professional immediately</div>
+        {% else %}
+            <i class="fas fa-check-circle icon" style="color: #4ecdc4;"></i>
+            <div class="result good">{{ result }}</div>
+            <div class="subtitle">Excellent! Maintain your healthy lifestyle</div>
+        {% endif %}
 
-<div class="box">
-    {% if result == "Diabetes Detected" %}
-        <p class="bad">{{ result }}</p>
-    {% else %}
-        <p class="good">{{ result }}</p>
-    {% endif %}
+        <div class="probability">
+            <i class="fas fa-chart-line"></i>
+            Diabetes Probability: <strong>{{ prob }}%</strong>
+        </div>
 
-    <p>Probability: <b>{{ prob }}%</b></p>
+        <div class="gauge">
+            <div class="gauge-fill" style="background: linear-gradient(90deg, #ff6b6b 0%, #feca57 {{ prob }}%, #4ecdc4 {{ prob }}%); width: {{ prob }}%;"></div>
+        </div>
 
-    <a href="/"><button style="padding:10px 20px;">Check Again</button></a>
-</div>
+        <a href="/" class="back-btn">
+            <i class="fas fa-redo"></i> Check Again
+        </a>
+    </div>
 
+    <script>
+        // Confetti for good result
+        {% if result != "Diabetes Detected" %}
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
+        {% endif %}
+
+        // Animate gauge fill
+        document.addEventListener('DOMContentLoaded', () => {
+            const fills = document.querySelectorAll('.gauge-fill');
+            fills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0%';
+                setTimeout(() => { fill.style.width = width; }, 500);
+            });
+        });
+    </script>
 </body>
 </html>
