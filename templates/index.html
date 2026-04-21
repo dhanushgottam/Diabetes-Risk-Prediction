@@ -1,413 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diabetes Risk Predictor - Modern AI Health Check</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding-top: 80px;
-            overflow-x: hidden;
-        }
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(45deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
-            padding: 15px 30px;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            backdrop-filter: blur(10px);
-        }
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header-icon {
-            font-size: 1.5em;
-            animation: pulse 2s infinite;
-            color: #ff6b6b;
-            margin-right: 15px;
-        }
-        .header h1 {
-            color: white;
-            font-size: 1.8em;
-            margin: 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            width: 90%;
-            max-width: 1200px;
-            margin: 40px auto;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: slideIn 0.8s ease-out;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .subtitle {
-            text-align: center;
-            margin-bottom: 40px;
-            color: rgba(255,255,255,0.9);
-            font-size: 1.3em;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .input-grid {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-        }
-        .input-grid:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .input-grid h3 {
-            color: white;
-            font-size: 1em;
-            margin-bottom: 15px;
-            text-align: center;
-            font-weight: 600;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.3);
-        }
-        /* BMI grid - narrow input */
-        .bmi-grid input {
-            width: 60%;
-            margin: 0 auto;
-            display: block;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.9);
-            font-size: 1em;
-            text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        .bmi-grid input:focus {
-            outline: none;
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            background: white;
-        }
-        /* Binary button grids */
-        .binary-grid {
-            text-align: center;
-        }
-        .yes-no-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-        .yes-no-btn {
-            flex: 1;
-            padding: 12px 8px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-            min-height: 45px;
-        }
-        .yes-btn {
-            background: rgba(76, 205, 196, 0.8);
-            color: white;
-        }
-        .no-btn {
-            background: rgba(255, 107, 107, 0.8);
-            color: white;
-        }
-        .yes-no-btn:hover { transform: scale(1.05); }
-        .yes-no-btn.selected {
-            background: linear-gradient(45deg, #4ecdc4, #44a08d);
-            box-shadow: 0 5px 15px rgba(78,205,196,0.4);
-            transform: scale(1.02);
-        }
-        .no-btn.selected {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
-            box-shadow: 0 5px 15px rgba(255,107,107,0.4);
-            transform: scale(1.02);
-        }
-        .submit-btn {
-            width: 100%;
-            padding: 20px;
-            background: linear-gradient(45deg, #ff6b6b, #feca57);
-            color: white;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.3em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(255,107,107,0.4);
-            position: relative;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255,107,107,0.5);
-        }
-        .loading { display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        .spinner {
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        @media (max-width: 768px) {
-            .form-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            .container { padding: 30px 20px; margin: 20px; max-width: 90%; }
-            .header h1 { font-size: 1.5em; }
-        }
-        @media (max-width: 480px) {
-            .form-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diabetes Risk Predictor</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    padding-top:80px;
+}
+
+/* HEADER */
+.header{
+    position:fixed;
+    top:0;width:100%;
+    background:linear-gradient(45deg,#667eea,#764ba2);
+    padding:15px;
+}
+.header h1{color:white}
+
+/* CONTAINER */
+.container{
+    width:90%;
+    margin:auto;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(20px);
+    border-radius:20px;
+    padding:30px;
+}
+
+/* GRID */
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:20px;
+}
+
+.input-grid{
+    background:rgba(255,255,255,0.15);
+    padding:15px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.input-grid.error{
+    border:2px solid red;
+    animation:shake .3s;
+}
+
+@keyframes shake{
+    0%{transform:0}
+    25%{transform:translateX(-5px)}
+    75%{transform:translateX(5px)}
+}
+
+/* INPUT */
+input,select{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:none;
+}
+.input-grid.error {
+    border: 2px solid #ff4757 !important;
+    animation: shake 0.3s;
+}
+/* BUTTONS */
+.yes-no-buttons{display:flex;gap:10px;}
+
+.yes-no-btn{
+    flex:1;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    opacity:.5;
+    transition:.2s;
+}
+
+.yes-btn{background:#4ecdc4;color:white;}
+.no-btn{background:#ff6b6b;color:white;}
+
+.yes-no-btn:hover{transform:scale(1.05);}
+
+.yes-no-btn.selected{
+    opacity:1;
+    transform:scale(1.1);
+    box-shadow:0 0 10px white;
+}
+
+/* SUBMIT */
+.submit-btn{
+    margin-top:20px;
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    background:#ff6b6b;
+    color:white;
+    font-size:18px;
+    cursor:pointer;
+}
+</style>
 </head>
+
 <body>
-    <header class="header">
-        <div class="header-content">
-            <i class="fas fa-heartbeat header-icon"></i>
-            <h1>Diabetes Risk Predictor</h1>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="subtitle">
-            <i class="fas fa-info-circle" style="margin-right: 10px;"></i>
-            Enter your health details for instant AI prediction
-        </div>
 
-        <form action="/predict" method="POST" id="predictForm">
-            <div class="form-grid">
-                <!-- BMI Grid -->
-                <div class="input-grid bmi-grid">
-                    <h3>BMI</h3>
-                    <input type="number" step="0.1" min="10" name="BMI" required placeholder="e.g. 25.5">
-                </div>
+<header class="header">
+<h1>Diabetes Predictor</h1>
+</header>
 
-                <!-- High Blood Pressure -->
-                <div class="input-grid binary-grid">
-                    <h3>High Blood Pressure</h3>
-                    <input type="hidden" name="HighBP" value="0" id="HighBP">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HighBP', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('HighBP', 0, this)">No</button>
-                    </div>
-                </div>
+<div class="container">
 
-                <!-- High Cholesterol -->
-                <div class="input-grid binary-grid">
-                    <h3>High Cholesterol</h3>
-                    <input type="hidden" name="HighChol" value="0" id="HighChol">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HighChol', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('HighChol', 0, this)">No</button>
-                    </div>
-                </div>
+<form action="/predict" method="POST" id="predictForm" onsubmit="return validateForm()">
 
-                <!-- Heavy Alcohol -->
-                <div class="input-grid binary-grid">
-                    <h3>Heavy Alcohol</h3>
-                    <input type="hidden" name="HvyAlcoholConsump" value="0" id="HvyAlcoholConsump">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HvyAlcoholConsump', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('HvyAlcoholConsump', 0, this)">No</button>
-                    </div>
-                </div>
+<div class="form-grid">
 
-                <!-- General Health -->
-                <div class="input-grid binary-grid">
-                    <h3>General Health</h3>
-                    <input type="hidden" name="GenHlth" value="0" id="GenHlth">
-                    <select style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9);" required>
-                        <option value="">Select...</option>
-                        <option value="1">1 - Excellent</option>
-                        <option value="2">2 - Very Good</option>
-                        <option value="3">3 - Good</option>
-                        <option value="4">4 - Fair</option>
-                        <option value="5">5 - Poor</option>
-                    </select>
-                </div>
+<!-- BMI -->
+<div class="input-grid">
+<h3>BMI</h3>
+<input type="number" name="BMI" required>
+</div>
 
-                <!-- Age Category -->
-                <div class="input-grid binary-grid">
-                    <h3>Age Category</h3>
-                    <input type="hidden" name="Age" value="0" id="Age">
-                    <select style="width: 100%; padding: 12px; border: none; border-radius: 8px; background: rgba(255,255,255,0.9);" required>
-                        <option value="">Select...</option>
-                        <option value="1">18–24</option>
-                        <option value="2">25–29</option>
-                        <option value="3">30–34</option>
-                        <option value="4">35–39</option>
-                        <option value="5">40–44</option>
-                        <option value="6">45–49</option>
-                        <option value="7">50–54</option>
-                        <option value="8">55–59</option>
-                        <option value="9">60–64</option>
-                        <option value="10">65–69</option>
-                        <option value="11">70–74</option>
-                        <option value="12">75–79</option>
-                        <option value="13">80+</option>
-                    </select>
-                </div>
+<!-- HighBP -->
+<div class="input-grid">
+<h3>High BP</h3>
+<input type="hidden" name="HighBP" value="" id="HighBP">
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('HighBP',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HighBP',0,this)">No</button>
+</div>
+</div>
 
-                <!-- Heart Disease -->
-                <div class="input-grid binary-grid">
-                    <h3>Heart Disease</h3>
-                    <input type="hidden" name="HeartDiseaseorAttack" value="0" id="HeartDiseaseorAttack">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HeartDiseaseorAttack', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('HeartDiseaseorAttack', 0, this)">No</button>
-                    </div>
-                </div>
+<!-- HighChol -->
+<div class="input-grid">
+<h3>High Cholesterol</h3>
+<input type="hidden" name="HighChol" value="" id="HighChol" >
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('HighChol',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HighChol',0,this)">No</button>
+</div>
+</div>
 
-                <!-- Difficulty Walking -->
-                <div class="input-grid binary-grid">
-                    <h3>Difficulty Walking</h3>
-                    <input type="hidden" name="DiffWalk" value="0" id="DiffWalk">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('DiffWalk', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('DiffWalk', 0, this)">No</button>
-                    </div>
-                </div>
+<!-- Alcohol -->
+<div class="input-grid">
+<h3>Alcohol</h3>
+<input type="hidden" name="HvyAlcoholConsump" value="" id="HvyAlcoholConsump">
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('HvyAlcoholConsump',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HvyAlcoholConsump',0,this)">No</button>
+</div>
+</div>
 
-                <!-- Physical Activity -->
-                <div class="input-grid binary-grid">
-                    <h3>Physical Activity</h3>
-                    <input type="hidden" name="PhysActivity" value="0" id="PhysActivity">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('PhysActivity', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('PhysActivity', 0, this)">No</button>
-                    </div>
-                </div>
+<!-- Gen Health -->
+<div class="input-grid">
+<h3>General Health</h3>
+<select name="GenHlth" required>
+<option value="">Select</option>
+<option value="1">Excellent</option>
+<option value="2">Very Good</option>
+<option value="3">Good</option>
+<option value="4">Fair</option>
+<option value="5">Poor</option>
+</select>
+</div>
 
-                <!-- Smoker -->
-                <div class="input-grid binary-grid" style="grid-column: span 5;">
-                    <h3>Smoker</h3>
-                    <input type="hidden" name="Smoker" value="0" id="Smoker">
-                    <div class="yes-no-buttons">
-                        <button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('Smoker', 1, this)">Yes</button>
-                        <button type="button" class="yes-no-btn no-btn selected" onclick="toggleBtn('Smoker', 0, this)">No</button>
-                    </div>
-                </div>
-            </div>
+<!-- Age -->
+<div class="input-grid">
+<h3>Age</h3>
+<select name="Age" required>
+<option value="">Select</option>
+<option value="1">18–24</option>
+<option value="2">25–29</option>
+<option value="3">30–34</option>
+<option value="4">35–39</option>
+<option value="5">40–44</option>
+<option value="6">45–49</option>
+<option value="7">50–54</option>
+<option value="8">55–59</option>
+<option value="9">60–64</option>
+<option value="10">65–69</option>
+<option value="11">70–74</option>
+<option value="12">75–79</option>
+<option value="13">80+</option>
+</select>
+</div>
 
-            <button type="submit" class="submit-btn">
-                <span id="btnText">Predict My Risk</span>
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                </div>
-            </button>
-        </form>
-    </div>
+<!-- Heart -->
+<div class="input-grid">
+<h3>Heart Disease</h3>
+<input type="hidden" name="HeartDiseaseorAttack" value="" id="HeartDiseaseorAttack">
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('HeartDiseaseorAttack',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('HeartDiseaseorAttack',0,this)">No</button>
+</div>
+</div>
 
-    <script>
-        // Toggle Yes/No buttons
-        function toggleBtn(fieldName, value, clickedBtn) {
-            const input = document.getElementById(fieldName);
-            input.value = value;
-            
-            // Reset all buttons in this grid
-            clickedBtn.parentElement.querySelectorAll('.yes-no-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            // Select clicked button
-            clickedBtn.classList.add('selected');
+<!-- Walk -->
+<div class="input-grid">
+<h3>Difficulty Walking</h3>
+<input type="hidden" name="DiffWalk" value="" id="DiffWalk" >
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('DiffWalk',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('DiffWalk',0,this)">No</button>
+</div>
+</div>
+
+<!-- Activity -->
+<div class="input-grid">
+<h3>Physical Activity</h3>
+<input type="hidden" name="PhysActivity" value="" id="PhysActivity">
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('PhysActivity',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn" onclick="toggleBtn('PhysActivity',0,this)">No</button>
+</div>
+</div>
+
+<!-- Smoker -->
+<div class="input-grid">
+<h3>Smoker</h3>
+<input type="hidden" name="Smoker" value="" id="Smoker">
+<div class="yes-no-buttons">
+<button type="button" class="yes-no-btn yes-btn" onclick="toggleBtn('Smoker',1,this)">Yes</button>
+<button type="button" class="yes-no-btn no-btn " onclick="toggleBtn('Smoker',0,this)">No</button>
+</div>
+</div>
+
+</div>
+
+<button class="submit-btn">Predict</button>
+
+</form>
+</div>
+
+<script>
+
+/* =========================
+   YES / NO BUTTON
+========================= */
+function toggleBtn(fieldName, value, clickedBtn) {
+    const input = document.getElementById(fieldName);
+    input.value = value;
+
+    clickedBtn.parentElement.querySelectorAll('.yes-no-btn')
+        .forEach(btn => btn.classList.remove('selected'));
+
+    clickedBtn.classList.add('selected');
+}
+
+
+/* =========================
+   STEP VALIDATION (ONE BOX AT A TIME)
+========================= */
+function validateForm(){
+
+    const grids = document.querySelectorAll('.input-grid');
+
+    for(let grid of grids){
+
+        grid.classList.remove('error');
+
+        let numberInput = grid.querySelector('input[type="number"]');
+        let select = grid.querySelector('select');
+        let hidden = grid.querySelector('input[type="hidden"]');
+
+        // ❌ BMI missing
+        if(numberInput && numberInput.value.trim() === ""){
+            showError(grid);
+            return false;
         }
 
-        // Form submit loading
-        const form = document.getElementById('predictForm');
-        form.addEventListener('submit', () => {
-            document.getElementById('btnText').style.display = 'none';
-            document.getElementById('loading').style.display = 'block';
-            form.querySelector('.submit-btn').disabled = true;
-        });
-
-        // Real-time validation + red border animation
-        function validateForm() {
-            const inputGrids = document.querySelectorAll('.input-grid');
-            let allValid = true;
-            
-            inputGrids.forEach(grid => {
-                const input = grid.querySelector('input[type="number"], input[type="hidden"], select');
-                const hasValue = input && input.value !== '' && input.value !== null;
-                
-                grid.classList.remove('error');
-                
-                if (!hasValue) {
-                    grid.classList.add('error');
-                    allValid = false;
-                }
-            });
-            
-            return allValid;
+        // ❌ Dropdown missing
+        if(select && select.value === ""){
+            showError(grid);
+            return false;
         }
 
-        // Add error class styles
-        const style = document.createElement('style');
-        style.textContent = `
-            .input-grid.error {
-                border: 2px solid #ff4757 !important;
-                animation: shake 0.5s ease-in-out, pulseRed 1.5s infinite;
-            }
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                75% { transform: translateX(5px); }
-            }
-            @keyframes pulseRed {
-                0% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7); }
-                70% { box-shadow: 0 0 0 20px rgba(255, 71, 87, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(255, 71, 87, 0); }
-            }
-        `;
-        document.head.appendChild(style);
+        // ❌ Yes/No missing
+        if(hidden && hidden.value === ""){
+            showError(grid);
+            return false;
+        }
+    }
 
-        // Validate on button clicks and input changes
-        document.querySelectorAll('.yes-no-btn, input, select').forEach(el => {
-            el.addEventListener('change', validateForm);
-            el.addEventListener('click', validateForm);
-        });
+    return true;
+}
 
-        // Form submit validation
-        form.addEventListener('submit', (e) => {
-            if (!validateForm()) {
-                e.preventDefault();
-                return false;
-            }
-            
-            // Loading
-            document.getElementById('btnText').style.display = 'none';
-            document.getElementById('loading').style.display = 'block';
-            form.querySelector('.submit-btn').disabled = true;
-        });
+
+/* =========================
+   ERROR UI
+========================= */
+function showError(grid){
+    grid.classList.add('error');
+
+    // scroll to that box
+    grid.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+
+/* =========================
+   SUBMIT CONTROL
+========================= */
+document.getElementById('predictForm').addEventListener('submit', function(e){
+
+    if(!validateForm()){
+        e.preventDefault();
+        return false;
+    }
+
+});
+</script>
+
+</body>
+</html>
