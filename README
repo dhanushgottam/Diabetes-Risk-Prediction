@@ -4,43 +4,43 @@ This project is a machine learning based diabetes prediction system developed us
 
 ## Features
 
-- Machine Learning based diabetes prediction
-- Models compared: Logistic Regression, SVM, Random Forest, KNN, Naive Bayes, XGBoost
-- XGBoost selected as the best model
-- Real-time prediction using Flask API
-- Input form for major health indicators
-- Confusion matrix, ROC curve, and feature importance graphs generated
-- Preprocessing and scaling included
-- Models saved as .pkl files for deployment
+* Machine Learning based diabetes prediction
+* Models compared: Logistic Regression, SVM, Random Forest, KNN, Naive Bayes, XGBoost
+* XGBoost selected as the best model
+* Real-time prediction using Flask API
+* Input form for major health indicators
+* Confusion matrix, ROC curve, and feature importance graphs generated
+* Preprocessing and scaling included
+* Models saved as .pkl files for deployment
 
 ## Dataset Used
 
-BRFSS 2015 Diabetes Binary 5050 Split Dataset  
+BRFSS 2015 Diabetes Binary 5050 Split Dataset
 Contains more than 70,000 balanced samples with 21 health-related features including:
 
-- HighBP
-- HighChol
-- CholCheck
-- BMI
-- Smoker
-- Stroke
-- HeartDisease
-- PhysActivity
-- GenHealth
-- MentalHealth
-- Age
-- Sex
-- Income
-and others.
+* HighBP
+* HighChol
+* CholCheck
+* BMI
+* Smoker
+* Stroke
+* HeartDisease
+* PhysActivity
+* GenHealth
+* MentalHealth
+* Age
+* Sex
+* Income
+  and others.
 
 Target variable:
-0 = No Diabetes  
-1 = Diabetes  
+0 = No Diabetes
+1 = Diabetes
 
 ## Models Trained and Compared
 
 | Model               | Accuracy |
-|---------------------|----------|
+| ------------------- | -------- |
 | Logistic Regression | ~74%     |
 | Random Forest       | ~73%     |
 | SVM                 | ~75%     |
@@ -50,12 +50,12 @@ Target variable:
 
 ## Tech Stack
 
-- Python
-- Flask
-- Scikit-Learn
-- XGBoost
-- Pandas and NumPy
-- Matplotlib
+* Python
+* Flask
+* Scikit-Learn
+* XGBoost
+* Pandas and NumPy
+* Matplotlib
 
 ## Project Structure
 
@@ -74,48 +74,51 @@ diabetes-prediction-ml/
 
 ## How to Run the Project
 
-#In Terminal or Command Prompt
-
-Step 1: Install required libraries
+### In Terminal or Command Prompt
+**Step 1: Install required libraries**
+```
 pip install -r requirements.txt
-
-
-
-Step 2: Train the model (only first time)
-
-
+```
+**Step 2: Train the model (only first time)**
+``'
 python trainml.py
-
-
-Step 3: Run the Flask application
-
-
+```
+**Step 3: Run the Flask application**
+```
 python app.py
-
-
-Step 4: Open the application in your browser
-http://
-
-
+``
+**Step 4: Open the application in your browser**
+```
+http://127.0.0.1:5000/
+```
 ## Project Output
 
 Graphs generated:
-- Confusion Matrix
-- ROC Curve
-- Feature Importance Chart
 
+* Confusion Matrix
+* ROC Curve
+* Feature Importance Chart
 
 ## Future Enhancements
 
-- Improve accuracy using hyperparameter tuning
-- Add deep learning models
-- Add more user-friendly UI
-- Integrate real-time health data from wearable devices
-- Deploy on cloud services like AWS or Render
+* Improve accuracy using hyperparameter tuning
+* Add deep learning models
+* Add more user-friendly UI
+* Integrate real-time health data from wearable devices
+* Deploy on cloud services like AWS or Render
+
+## 🌐 Deployment
+
+The application is successfully deployed on the cloud using Render.
+
+🔗 **Live Application:**
+https://betesriskprediction-using-machine.onrender.com
+
+Users can access the web app and perform real-time diabetes risk prediction directly through the browser without any local setup.
 
 ## Author
 
-Gottam Dhanush  
-Computer Science and Engineering  
-Lovely Professional University  
-Email: dhanushgottam@gmail.com
+Gottam Dhanush
+Computer Science and Engineering
+Lovely Professional University
+Email: [dhanushgottam@gmail.com](mailto:dhanushgottam@gmail.com)
