@@ -1,15 +1,20 @@
 from flask import Flask, render_template, request
 import numpy as np
 import joblib
+import os
 
-# Load model, scaler, and feature means
-model = joblib.load("xgboost_diabetes_model.pkl")
-scaler = joblib.load("scaler.pkl")
-feature_means = joblib.load("feature_means.pkl")
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 
-# 10 major inputs
+
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+
+model = joblib.load(os.path.join(BASE_DIR, "xgboost_diabetes_model.pkl"))
+scaler = joblib.load(os.path.join(BASE_DIR, "scaler.pkl"))
+feature_means = joblib.load(os.path.join(BASE_DIR, "feature_means.pkl"))
+
+
 major_features = [
     "BMI",
     "HighBP",
@@ -23,6 +28,7 @@ major_features = [
     "Smoker"
 ]
 
+
 @app.route('/')
 def home():
     return render_template("index.html")
@@ -33,11 +39,10 @@ def predict():
 
     user_values = []
 
-    # 🔴 SAFE INPUT HANDLING
+    # Input validation
     for feature in major_features:
         value = request.form.get(feature)
 
-        # 🚨 If any field is empty → stop submission
         if value is None or value == "":
             return render_template(
                 "index.html",
@@ -52,9 +57,8 @@ def predict():
                 error="Invalid input detected. Please check your values."
             )
 
-    # Step 2 → Create full 21-feature input
+    # Build full feature vector
     full_input = []
-
     for col in feature_means.index:
         if col in major_features:
             full_input.append(user_values[major_features.index(col)])
@@ -63,10 +67,10 @@ def predict():
 
     final_input = np.array(full_input).reshape(1, -1)
 
-    # Step 3 → Scale
+    # Scale input
     final_input_scaled = scaler.transform(final_input)
 
-    # Step 4 → Predict
+    # Predict
     prediction = model.predict(final_input_scaled)[0]
     probability = model.predict_proba(final_input_scaled)[0][1]
 
@@ -78,6 +82,5 @@ def predict():
         prob=round(probability * 100, 2)
     )
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+# REQUIRED for Vercel
+handler = app
